@@ -1,16 +1,32 @@
-import express from 'express';
 import dotenv from 'dotenv';
-import { hello } from './src/hello';
+import express from 'express';
+import mongoose from 'mongoose';
 
 dotenv.config();
 
 const PORT = process.env.PORT || 5050;
 const app = express();
 
-app.get('/ping', (_req, res) => {
-  res.send(hello());
+const mongoConnectOptions: mongoose.ConnectOptions = {
+  keepAlive: true,
+  keepAliveInitialDelay: 300000,
+  heartbeatFrequencyMS: 10000,
+};
+
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  throw new Error('MONGO_URI is not defined!');
+}
+
+mongoose
+  .connect(MONGO_URI, mongoConnectOptions)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.log(err));
+
+app.get('/health', (_req, res) => {
+  res.send("I'm Alive!");
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port: ${PORT}`);
+  console.log(`OSAI Core running on port: ${PORT}`);
 });
