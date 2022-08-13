@@ -1,13 +1,13 @@
-import express from "express";
-import dotenv from "dotenv";
-import { hello } from "./src/hello";
+import express from 'express';
+import dotenv from 'dotenv';
+import { hello } from './src/hello';
 
 dotenv.config();
 
 const PORT = process.env.PORT || 5050;
 const app = express();
 
-app.get("/ping", (_req, res) => {
+app.get('/ping', (_req, res) => {
   res.send(hello());
 });
 
