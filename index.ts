@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
+import eventsRouter from './src/routes/events';
 
 dotenv.config();
 
@@ -23,9 +24,15 @@ mongoose
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.log(err));
 
+app.get('/', (_req, res) => {
+  res.send("I'm Alive!");
+});
+
 app.get('/health', (_req, res) => {
   res.send("I'm Alive!");
 });
+
+app.use('/events', eventsRouter);
 
 app.listen(PORT, () => {
   console.log(`OSAI Core running on port: ${PORT}`);
