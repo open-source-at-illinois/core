@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import eventsRouter from './src/routes/events';
 
@@ -24,13 +24,9 @@ mongoose
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.log(err));
 
-app.get('/', (_req, res) => {
-  res.send("I'm Alive!");
-});
-
-app.get('/health', (_req, res) => {
-  res.send("I'm Alive!");
-});
+const healthHandler = (_: Request, res: Response) => res.send("I'm alive!");
+app.get('/', healthHandler);
+app.get('/health', healthHandler);
 
 app.use('/events', eventsRouter);
 
