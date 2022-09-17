@@ -1,11 +1,11 @@
 import express from 'express';
 import Event from '../models/event';
-import { toMaskedEvent } from '../utils';
+import { sortEventsChronologically, toMaskedEvent } from '../utils';
 const router = express.Router();
 
 // middleware that is specific to this router
 router.use((_req, _res, next) => {
-  console.log('Time: ', Date.now());
+  console.log('Time: ', Date.now(), '/events' + _req.url);
   next();
 });
 
@@ -13,6 +13,18 @@ router.use((_req, _res, next) => {
 router.get('/', async (_req, res) => {
   const events = await Event.find({});
   res.send(events.map(toMaskedEvent));
+});
+
+router.get('/latest', async (_req, res) => {
+  const events = await Event.find({
+    active: true,
+  });
+  /* A type that is defined in the `utils.ts` file. */
+  const sortedEvents = events
+    .map(toMaskedEvent)
+    .sort(sortEventsChronologically);
+
+  res.send(sortedEvents[0]);
 });
 
 export default router;
