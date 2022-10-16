@@ -15,7 +15,7 @@ router.get('/', async (_req, res) => {
     
   let events;
  
-  if(isActive !== undefined) {
+  if(isActive !== undefined && (isActive.toLowerCase() === 'true' || isActive.toLowerCase() === 'false')) {
     events = await Event.find({
       active: (isActive.toLowerCase() === 'true'),
     })
