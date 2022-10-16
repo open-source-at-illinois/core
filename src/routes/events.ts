@@ -11,7 +11,18 @@ router.use((_req, _res, next) => {
 
 // define the home page route
 router.get('/', async (_req, res) => {
-  const events = await Event.find({});
+  let isActive: any|undefined = _req.query.active;
+    
+  let events;
+ 
+  if(isActive !== undefined) {
+    events = await Event.find({
+      active: (isActive.toLowerCase() === 'true'),
+    })
+  } else {
+    events = await Event.find({});
+  }
+
   res.send(events.map(toMaskedEvent));
 });
 
