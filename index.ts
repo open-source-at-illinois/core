@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import eventsRouter from './src/routes/events';
+import authRouter from './src/routes/auth';
 import cors from 'cors';
 
 dotenv.config();
@@ -34,6 +35,7 @@ const healthHandler = (_: Request, res: Response) => res.send("I'm alive!");
 app.get('/', healthHandler);
 app.get('/health', healthHandler);
 
+app.use('/auth', authRouter);
 app.use('/events', eventsRouter);
 
 app.listen(PORT, () => {
