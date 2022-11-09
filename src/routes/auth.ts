@@ -3,13 +3,13 @@ import dotenv from 'dotenv';
 import session from 'express-session';
 import passport from 'passport';
 import passportDiscord from 'passport-discord';
+import refresh from 'passport-oauth2-refresh';
+
 dotenv.config();
 const authRouter = express.Router();
 
 var scopes = ['identify'];
 var prompt = 'consent';
-
-console.log('client id', process.env.DISCORD_CLIENT_ID);
 
 const DiscordStrategy = new passportDiscord.Strategy(
   {
@@ -18,16 +18,16 @@ const DiscordStrategy = new passportDiscord.Strategy(
     callbackURL: 'http://localhost:7000/auth/callback',
     scope: scopes,
   },
-  function (_accessToken, _refreshToken, profile, done) {
-    process.nextTick(function () {
-      return done(null, profile);
-    });
+  (_accessToken, refreshToken, profile: any, done) => {
+    profile.refreshToken = refreshToken;
+    process.nextTick(() => done(null, profile));
   }
 );
 
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((obj: any, done) => done(null, obj));
 passport.use(DiscordStrategy);
+refresh.use(DiscordStrategy);
 
 authRouter.use(
   session({
@@ -38,7 +38,6 @@ authRouter.use(
 );
 authRouter.use(passport.initialize());
 authRouter.use(passport.session());
-
 authRouter.get(
   '/',
   passport.authenticate('discord', { scope: scopes, prompt: prompt }),
