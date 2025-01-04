@@ -21,11 +21,7 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         source: "."
         target: "~/core"
-
-    - name: Create .env file
-      run: |
-        touch .env
-        echo "${{secrets.MONGO_URI}}" >> .env
+        
     - name: Executing remote commands
       uses: appleboy/ssh-action@master
       with:
@@ -34,6 +30,8 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         script: |
           cd ~/core
+          touch .env
+          echo "${{secrets.MONGO_URI}}" >> .env
           export NVM_DIR=~/.nvm
           source ~/.nvm/nvm.sh
           yarn && yarn build
