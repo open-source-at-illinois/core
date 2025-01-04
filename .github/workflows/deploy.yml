@@ -31,7 +31,7 @@ jobs:
         script: |
           cd ~/core
           touch .env
-          echo "${{secrets.MONGO_URI}}" >> .env
+          echo -e "${{secrets.MONGO_URI}}" >> .env
           export NVM_DIR=~/.nvm
           source ~/.nvm/nvm.sh
           yarn && yarn build
