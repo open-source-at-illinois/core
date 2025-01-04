@@ -1,27 +1,36 @@
 name: Deploy to VPS
 
-on: [push]
+on: 
+  push:
+    branches:
+      - master
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+    - uses: actions/checkout@v1
 
-      - name: Executing remote commands
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          USERNAME: ${{ secrets.USERNAME }}
-          PORT: ${{ secrets.PORT }}
-          KEY: ${{ secrets.SSHKEY }}
-          script: |
-            cd /osai-core/core
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh
-            git pull origin main
-            yarn
-            pm2 stop osai-core
-            pm2 del osai-core
-            pm2 start yarn --name osai-core -- start
+    - name: Copy repository contents via scp
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        source: "."
+        target: "~/core"
+
+    - name: Executing remote commands
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        script: |
+          cd ~/core
+          export NVM_DIR=~/.nvm
+          source ~/.nvm/nvm.sh
+          yarn && yarn build
+          pm2 restart api
